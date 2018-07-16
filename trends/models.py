@@ -19,7 +19,6 @@ class Posts(models.Model):
     author = models.TextField(default=None, null=True)
     website = models.TextField(default=None, null=True)
     published = models.DateTimeField(null=True, blank=True)
-#    topics = models.TextField(default=None, null=True)
     def __str__(self):
         return str(self.postID)
 
@@ -29,4 +28,10 @@ class Topic(models.Model):
     published = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.topic + " " + self.post
+        return self.topic + " " + str(self.post)
+
+class Hot(models.Model):
+    date = models.DateTimeField(null=True, blank=True)
+
+class Newspaper(models.Model):
+    website = models.TextField(default=None, null=True)

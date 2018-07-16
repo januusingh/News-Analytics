@@ -25,4 +25,5 @@ urlpatterns = [
     path('trends/chart/articles/', views.ChartData.as_view(), name='chart_articles'),
     path('trends/articles/', views.current_articles, name='current_articles'),
     path('', views.HomeView.as_view(), name='home'),
+    path('home/', views.home, name='home')
 ]

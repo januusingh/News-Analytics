@@ -4,6 +4,21 @@
 {% block jquery %}
 var endpoint = '/trends/chart/articles/'
 
+var dynamicColors = function () {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + "," + 0.2 + ")";
+}
+
+var getRandomizedColors = function(count) {
+  var colors = [];
+  for (var i = 0; i < count; i++) {
+    colors.push(dynamicColors());
+  }
+  return colors;
+}
+
 $.ajax({
   method: "GET",
   url: endpoint,
@@ -12,6 +27,8 @@ $.ajax({
     console.log(response_data)
     var labels = response_data.labels
     var count = response_data.count
+    var labels2 = response_data.labels2
+    var count2 = response_data.count2
     console.log(labels)
     console.log(count)
 
@@ -21,28 +38,9 @@ $.ajax({
         data: {
             labels : labels,
             datasets: [{
-                label: '# of Votes',
+                label: 'Search Appearances Per Word',
                 data : count,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                ],
-                borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(255, 159, 64, 1)',
-                ],
+                backgroundColor: getRandomizedColors(labels.length),
                 borderWidth: 1
             }]
         },
@@ -56,6 +54,20 @@ $.ajax({
             }
           }
       });
+    var ctx2 = document.getElementById("PieChart");
+    var PieChart = new Chart(ctx2, {
+      type : 'pie',
+      data : {
+           labels : labels2,
+           datasets : [{
+             label : "Hot Topic appearances per paper",
+             data : count2,
+             backgroundColor: getRandomizedColors(labels2.length),
+           }]
+      }
+    }
+
+    )
   },
   error: function(error_data){
     console.log("error")
@@ -66,11 +78,46 @@ $.ajax({
 </script>
 
 {% block content %}
-<nav class="navbar navbar-light bg-dark text-black">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Hot Topic</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="home/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="historical/">History</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Other
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
 </nav>
-<div class=container-fluid>
+
+<div class=container>
   <div class='row'>
-    <div class='col-sm-9'>
+    <div class='col-sm-6'>
       <div class="alert alert-alert" role="alert">
       <h1 align="center">Trends</h1>
       </div>
@@ -78,8 +125,12 @@ $.ajax({
   </div>
 
   <div class='row'>
-    <div class='col-sm-9'>
-      <canvas id="ArticleChart" width="400" height="400"></canvas>
+    <div class='col-sm-6'>
+      <h3 align="center"> Trending Topics by Appearance</h3>
+      <canvas id="ArticleChart" width="400" height="200"></canvas>
+      <h3 align="center"> Trending Topics by Newspaper</h3>
+      <canvas id="PieChart" width="400" height="200"></canvas>
+      <canvas id="TimeSeries" width="400" height="400"></canvas>
     </div>
   </div>
 </div>
